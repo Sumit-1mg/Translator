@@ -2,12 +2,12 @@ import os
 from sanic import Sanic
 from sanic.response import json
 from sanic import response
+
+from app.managers.api_call import Translator
 from app.utils.helper import validate
 from app.utils.lang_code import lang_code
 from app.managers.find_language import Finder
-from app.managers.lacto_api import Lacto_translator
-from app.managers.rapid_api import Rapid_translator
-from app.managers.google_api import Google_translator
+from app.managers.file_translate import File_translator
 
 app = Sanic("Translator")
 
@@ -36,48 +36,45 @@ async def find(request):
 
 @app.post('/google_api')
 async def google(request):
-    translator = Google_translator()
+    translator = Translator()
     request_data = request.json
     ans = validate(request_data)
     if ans['error']:
         return json(ans)
-    translated_txt = translator.api_call(request_data)
+    translated_txt = translator.api_call(request_data, "google")
     return json(translated_txt)
 
 
 @app.post('/lacto_ai_api')
 async def lacto(request):
-    translator = Lacto_translator()
+    translator = Translator()
     request_data = request.json
     ans = validate(request_data)
     if ans['error']:
         return json(ans)
-    translated_txt = translator.api_call(request_data)
+    translated_txt = translator.api_call(request_data, "lacto")
     return json(translated_txt)
 
 
 @app.post('/rapid_api')
 async def rapid(request):
-    translator = Rapid_translator()
+    translator = Translator()
     request_data = request.json
     ans = validate(request_data)
     if ans['error']:
         return json(ans)
-    translated_txt = translator.api_call(request_data)
-    print(translated_txt)
+    translated_txt = translator.api_call(request_data, "rapid")
     return json(translated_txt)
 
 
 @app.post('/file_google_api')
 async def file_translate(request):
-    translator = Google_translator()
+    translator = File_translator()
     request_data = request.json
-    print(request_data)
     input_file = request_data['input_file']
     output_language = request_data['output_language']
     output_file = input_file.split('.')[0] + '_' + output_language + '.' + input_file.split('.')[1]
     ans = await translator.translate_file(input_file, output_file, output_language)
-    print(ans)
     return json(ans)
     pass
 
@@ -86,7 +83,6 @@ async def file_translate(request):
 async def suggest(request):
     request_data = request.json
     suggestions = []
-    print("Suggestion is called")
     target_string = request_data.get('text')
     n = len(target_string)
     if not n:
