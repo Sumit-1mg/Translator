@@ -1,5 +1,4 @@
 import requests
-
 from app.Config.config import google_api_key
 from app.utils.constants import UrlEndPoints
 from app.utils.helper2 import get_language
@@ -10,9 +9,7 @@ class Finder:
         pass
 
     def api_call(self, request_data):
-        ans = {}
-        # TODO: rename error to success and values to true false
-        ans['error'] = 0
+        ans = {'error': 0}
         try:
             url = UrlEndPoints.GOOGLE_URL + '/detect'
             params = {
@@ -31,5 +28,4 @@ class Finder:
         except Exception as e:
             ans['error'] = 1
             ans['error_message'] = 'Cannont able to connect with API'
-            # ans['error_message'] = str(e)
         return ans

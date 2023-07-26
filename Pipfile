@@ -4,8 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sanic = {vesion='=23.3.0'}
+sanic = "*"
 requests = "*"
+aiohttp = "*"
 
 [requires]
 python_version = '3.11'
